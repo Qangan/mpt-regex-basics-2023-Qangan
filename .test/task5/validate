@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set -e
+
+export LC_ALL=ru_RU.UTF-8
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+ROOT_DIR="$SCRIPT_DIR/../.."
+
+TMP_DIR=$(mktemp -d)
+
+######################
+
+mkdir -p "$TMP_DIR/data"
+
+######################
+
+function test_solution() {
+  EXPECTED="$1"
+  bash "$ROOT_DIR/solution/task5.sh"
+  diff --color=always -U 1000 "$EXPECTED" "$TMP_DIR/data/students.txt"
+}
+
+
+echo "Test case #1 (students.csv)"
+
+cat "$ROOT_DIR/data/students.csv" > "$TMP_DIR/data/students.csv"
+cat "$SCRIPT_DIR/out.expected" > "$TMP_DIR/expected"
+cd "$TMP_DIR" && test_solution "$TMP_DIR/expected"
+
+
+echo "Test case #2 (students.csv reversed)"
+
+tac "$ROOT_DIR/data/students.csv" > "$TMP_DIR/data/students.csv"
+tac "$SCRIPT_DIR/out.expected" > "$TMP_DIR/expected"
+cd "$TMP_DIR" && test_solution "$TMP_DIR/expected"
+
+
+echo "Test case #3 (students.csv doubled)"
+
+cat "$ROOT_DIR/data/students.csv" "$ROOT_DIR/data/students.csv" > "$TMP_DIR/data/students.csv"
+cat "$SCRIPT_DIR/out.expected" "$SCRIPT_DIR/out.expected" > "$TMP_DIR/expected"
+cd "$TMP_DIR" && test_solution "$TMP_DIR/expected"

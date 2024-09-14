@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+set -e
+
+export LC_ALL=ru_RU.UTF-8
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+ROOT_DIR="$SCRIPT_DIR/../.."
+
+TMP_DIR=$(mktemp -d)
+
+######################
+
+mkdir -p "$TMP_DIR/data"
+
+######################
+
+function test_solution() {
+  EXPECTED="$1"
+  bash "$ROOT_DIR/solution/task4.sh"
+  diff --color=always -U 1000 "$EXPECTED" "$TMP_DIR/data/blok_kids_edition.txt"
+}
+
+
+echo "Test case #1 (blok.txt)"
+
+cat "$ROOT_DIR/data/blok.txt" > "$TMP_DIR/data/blok.txt"
+cat "$SCRIPT_DIR/out.expected" > "$TMP_DIR/expected"
+cd "$TMP_DIR" && test_solution "$TMP_DIR/expected"
+
+
+echo "Test case #2 (blok.txt reversed)"
+
+tac "$ROOT_DIR/data/blok.txt" > "$TMP_DIR/data/blok.txt"
+tac "$SCRIPT_DIR/out.expected" > "$TMP_DIR/expected"
+cd "$TMP_DIR" && test_solution "$TMP_DIR/expected"
+
+
+echo "Test case #3 (blok.txt doubled)"
+
+cat "$ROOT_DIR/data/blok.txt" "$ROOT_DIR/data/blok.txt" > "$TMP_DIR/data/blok.txt"
+cat "$SCRIPT_DIR/out.expected" "$SCRIPT_DIR/out.expected" > "$TMP_DIR/expected"
+cd "$TMP_DIR" && test_solution "$TMP_DIR/expected"
