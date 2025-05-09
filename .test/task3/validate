@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+set -e
+
+export LC_ALL=ru_RU.UTF-8
+
+SCRIPT_DIR=$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )
+ROOT_DIR="$SCRIPT_DIR/../.."
+
+TMP_DIR=$(mktemp -d)
+
+######################
+
+mkdir -p "$TMP_DIR/data"
+
+######################
+
+function test_solution() {
+  EXPECTED="$1"
+  set +e
+  ACTUAL=$(bash "$ROOT_DIR/solution/task3.sh" 2>&1)
+  ACTUAL_EXIT=$?
+  set -e
+  if [[ $ACTUAL_EXIT -ne 0 ]]; then
+    echo "$ACTUAL"
+    exit $ACTUAL_EXIT
+  fi
+  if [[ "$EXPECTED" != "$ACTUAL" ]]; then
+    echo "Expected $EXPECTED but got $ACTUAL"
+    exit 1
+  fi
+}
+
+
+echo "Test case #1 (pushkin.txt)"
+
+cat "$ROOT_DIR/data/pushkin.txt" > "$TMP_DIR/data/pushkin.txt"
+cd "$TMP_DIR" && test_solution 90
+
+
+echo "Test case #2 (pushkin.txt reversed)"
+
+tac "$ROOT_DIR/data/pushkin.txt" > "$TMP_DIR/data/pushkin.txt"
+cd "$TMP_DIR" && test_solution 90
+
+
+echo "Test case #3 (pushkin.txt doubled)"
+
+cat "$ROOT_DIR/data/pushkin.txt" "$ROOT_DIR/data/pushkin.txt" > "$TMP_DIR/data/pushkin.txt"
+cd "$TMP_DIR" && test_solution 180
